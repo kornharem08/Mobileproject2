@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css">
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
+    <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+        crossorigin="anonymous"></script>
+    <script src="ejs.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Fira+Sans+Extra+Condensed" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/5.5.0/firebase.js"></script>
+    <script src="/__/firebase/5.4.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-firestore.js"></script>
+    <script>
+        // Initialize Firebase
+
+        var config = {
+            apiKey: "AIzaSyC-41vL_B8oS2JaG3il9Gsgl0vVJN9qIDk",
+            authDomain: "showpee-22442.firebaseapp.com",
+            databaseURL: "https://showpee-22442.firebaseio.com",
+            projectId: "showpee-22442",
+            storageBucket: "showpee-22442.appspot.com",
+            messagingSenderId: "325935737512"
+        };
+        firebase.initializeApp(config);
+        // Initialize Cloud Firestore through Firebase
+        var db = firebase.firestore();
+
+        // Disable deprecated features
+        db.settings({
+            timestampsInSnapshots: true
+        });
+    </script>
+    <title></title>
+</head>
+
+<body>
+    <ons-navigator id="myNavigator">
+        <ons-page>
+            <ons-tabbar swipeable position="auto" id="tabbar">
+                <ons-tab page="tab1.html" label="Home" icon="ion-home, material:md-home" badge="7" active>
+                </ons-tab>
+                <ons-tab page="tab2.html" label="Product" icon="md-store" active-icon="md-store">
+                </ons-tab>
+                <ons-tab id="addcart" page="tab3.html" label="Cart" icon="md-shopping-cart" badge="" active-icon="md-shopping-cart">
+                </ons-tab>
+            </ons-tabbar>
+        </ons-page>
+        <template id="tab1.html">
+            <ons-page id="Tab1">
+
+                <ons-toolbar>
+                    <div class="left">
+                        <ons-toolbar-button icon="md-favorite"></ons-toolbar-button>
+                    </div>
+
+                    <div class="center" id="appname"></div>
+
+                    <div class="right">
+                        <ons-toolbar-button icon="md-github" onclick=window.location.href="logout.html"></ons-toolbar-button>
+                    </div>
+                </ons-toolbar>
+                <p style="text-align: center; margin-top: 10px;">
+                    <ons-search-input placeholder="Search" id="search" onchange="search(this.value)"></ons-search-input>
+                </p>
+                <ons-carousel swipeable auto-scroll overscrollable id="carousel" style="height: 300px;">
+                    <ons-carousel-item id=carousel1>
+                    </ons-carousel-item>
+                    <ons-carousel-item id=carousel2>
+                    </ons-carousel-item>
+                    <ons-carousel-item id=carousel3>
+                    </ons-carousel-item>
+                </ons-carousel>
+                <div>
+                    <div id="icons"></div>
+                    <script id=icon_template type="text/template">
+                        <ons-row style="text-align:center">
+                            
+                        <% categories.forEach(function(category){%>
+                    <ons-col width="33%">
+                        <div class="category_wrapper" style="background-color:thistle" onclick="changeTab('<%= category.name %>')">
+                            <figure class="category_thumbnail">
+                                <ons-icon id=icon1 icon="<%= category.icon %>"></ons-icon>
+                                <div class="category_title" id=icon1_text> <%= category.name %></div>
+                            </figure>
+                        </div>
+                    </ons-col>
+                    <%});%>
+                </ons-row>
+                </script>
+                </div>
+            </ons-page>
+        </template>
+
+
+        <template id="tab3.html">
+            <ons-page id="Tab3">
+
+                <ons-toolbar>
+                    <div class="left">
+                        <ons-toolbar-button icon="md-favorite"></ons-toolbar-button>
+                    </div>
+
+                    <div class="center">Cart</div>
+
+                    <div class="right">
+                        <ons-toolbar-button icon="md-github"></ons-toolbar-button>
+                    </div>
+                </ons-toolbar>
+
+                <ons-list-header>Thumbnails and titles</ons-list-header>
+                <div id=cart_show></div>
+                <script id=cart_template type="text/template">
+
+                    <% product.forEach(function(cart){
+                        var cart = cart.data(); 
+                        
+                      %>
+                      
+            <ons-list-item>
+                <div class="left">
+                    <img class="list-item__thumbnail" src="<%= cart.picture[0] %>">
+                </div>
+                <div class="center">
+                    <span class="list-item__title"> <%= cart.title %></span>
+                    <font  color="#FF8C00"> <span class="list-item__subtitle">฿<%= cart.price %></span></font>
+                </div>
+                
+                <div class="right">
+                    <ons-toolbar-button icon="fa-trash" onclick="deleted(<%countCart%>)"></ons-toolbar-button>
+                </div>
+            </ons-list-item>
+            <%});%>
+        </script>
+
+                <ons-button modifier="large">PROCEED TO PAY</ons-button>
+            </ons-page>
+        </template>
+
+
+        <template id="tab2.html">
+            <ons-page id="Tab2">
+                <ons-toolbar>
+                    <div class="left">
+                        <ons-toolbar-button icon="md-favorite"></ons-toolbar-button>
+                    </div>
+                    <div class="center">Shop</div>
+                </ons-toolbar>
+                <div id="product"></div>
+                <script id="product_template" type="text/template">
+                 <ons-row>
+                        <% product.forEach(function(products){
+                            var products = products.data();%>    
+                        <ons-col width="50%" >
+                            <ons-card onclick="getDetail('<%= products.title %>')" >
+                                <img class="" src="<%= products.picture[0] %>" width="100%"height="120px"><br>
+                        
+                                        <font><%= products.title %><br></font>
+                                        <font size="3" color="#FF8C00">฿<%= products.price %></font><br>
+                                        <font size="2" color="#808080"><%= products.catagory %></font>
+                                        <span class="rating-static rating-<%= products.rating*10%>"></span>
+                             </ons-card>
+                            </ons-col>
+                     <%});%> 
+                    </ons-row>
+</Script>
+                </div>
+            </ons-page>
+        </template>
+
+
+        </ons-page>
+        </template>
+        <template id="tab4.html">
+            <ons-page id="Tab2">
+
+
+
+                <script>
+                    var detail = localStorage.getItem('detail');
+                </script>
+
+                <div id="detail"></div>
+                <script id="detail_template" type="text/template">
+     <ons-row>
+          <ons-toolbar> 
+              <% detail.forEach(function(detail){
+                    var detail = detail.data(); %>   
+                    <div class="left">
+                        <div class="left">
+                            <ons-back-button>Back</ons-back-button>
+                        </div>
+                        <ons-toolbar-button icon="md-favorite"></ons-toolbar-button>
+                    </div>
+                    <div class="center"><%= detail.title %></div>
+                </ons-toolbar>
+                                     
+            <ons-col width="100%" >
+                <div style="height: 400px; padding: 1px 0 0 0;">
+                    <ons-card>
+                        <ons-list>       
+                                <ons-carousel swipeable auto-scroll overscrollable id="carousel" style="height: 300px;">
+                                        <ons-carousel-item id="carousel2" style="background:url(<%= detail.picture[0] %>) no-repeat center; background-size: contain;">
+                                        </ons-carousel-item>
+                                        <ons-carousel-item id="carousel2" style="background:url(<%= detail.picture[1] %>) no-repeat center; background-size: contain;">
+                                        </ons-carousel-item>
+                                        <ons-carousel-item id="carousel3" style="background:url(<%= detail.picture[2] %>) no-repeat center; background-size: contain;">
+                                        </ons-carousel-item>
+                                    </ons-carousel>
+                            <!-- <img class="" src="<%= detail.picture %>" width="100%"height="300px"   border:3px solid #021a40; ><br> -->
+                                <ons-list-header><center><%= detail.catagory %></center></ons-list-header>
+                                <ons-list-item><b><%= detail.title %></b><br></ons-list-item>
+                                <ons-list-item><font size="5" color="#FF8C00">฿<%= detail.price %></font></ons-list-item>
+                                <ons-list-item><font size="2" color="#808080"><%= detail.detail %></font></ons-list-item>
+                                <ons-list-item><span class="rating-static rating-<%= detail.rating*10%>"></span></ons-list-item>
+                        </ons-list>
+                        <p style="text-align: center; margin: 10px;">
+                            <ons-button modifier="large" onclick="addtocart('<%= detail.title %>');">ADD PRODUCT</ons-button>
+                          </p>
+                    </ons-card>
+                </div>
+               
+            </ons-col>
+                 <%});%> 
+
+     </ons-row>
+</Script>
+                </div>
+
+            </ons-page>
+        </template>
+        </ons-page>
+        <style type="text/css">
+            * {
+                font-family: 'Fira Sans Extra Condensed', sans-serif;
+            }
+
+            .thumbnail {
+                width: 120px;
+                height: 120px;
+                display: table;
+                background-color: rgba(0, 0, 0, 0.42);
+            }
+
+            .thumbnail ons-icon {
+                font-size: 70px;
+                display: table-cell;
+                vertical-align: middle !important;
+            }
+
+            .category {
+                margin: 20px 0px;
+                padding: 0px 30px;
+            }
+
+            .category_wrapper {
+                max-width: 120px;
+                width: 90%;
+                margin: auto;
+                background-color: rgba(128, 128, 128, 0.62);
+                margin-top: 15px;
+            }
+
+            .category_wrapper ons-icon {
+                font-size: 55px;
+                padding-top: 10px;
+                line-height: 0.75em;
+            }
+
+            .category_thumbnail {
+                display: inline-block;
+                margin: 16px 0px;
+            }
+
+            .category_title {
+                font-size: 12px;
+                font-weight: bold;
+                padding-top: 10px;
+            }
+
+            .post-image {
+                width: 250px;
+                height: 200px;
+            }
+
+            .rating-static {
+                width: 60px;
+                height: 16px;
+                display: block;
+                background: url('http://www.itsalif.info/blogfiles/rating/star-rating.png') 0 0 no-repeat;
+            }
+
+            .rating-50 {
+                background-position: 0 0;
+            }
+
+            .rating-40 {
+                background-position: -12px 0;
+            }
+
+            .rating-30 {
+                background-position: -24px 0;
+            }
+
+            .rating-20 {
+                background-position: -36px 0;
+            }
+
+            .rating-10 {
+                background-position: -48px 0;
+            }
+
+            .rating-0 {
+                background-position: -60px 0;
+            }
+
+            .rating-1 {
+                background-position: -48px -16px;
+            }
+
+            .rating-11 {
+                background-position: -36px -16px;
+            }
+
+            .rating-21 {
+                background-position: -24px -16px;
+            }
+
+            .rating-31 {
+                background-position: -12px -16px;
+            }
+
+            .rating-41 {
+                background-position: 0 -16px;
+            }
+
+            .rating-2 {
+                background-position: -48px -16px;
+            }
+
+            .rating-12 {
+                background-position: -36px -16px;
+            }
+
+            .rating-22 {
+                background-position: -24px -16px;
+            }
+
+            .rating-32 {
+                background-position: -12px -16px;
+            }
+
+            .rating-42 {
+                background-position: 0 -16px;
+            }
+
+            .rating-3 {
+                background-position: -48px -16px;
+            }
+
+            .rating-13 {
+                background-position: -36px -16px;
+            }
+
+            .rating-23 {
+                background-position: -24px -16px;
+            }
+
+            .rating-33 {
+                background-position: -12px -16px;
+            }
+
+            .rating-43 {
+                background-position: 0 -16px;
+            }
+
+            .rating-4 {
+                background-position: -48px -16px;
+            }
+
+            .rating-14 {
+                background-position: -36px -16px;
+            }
+
+            .rating-24 {
+                background-position: -24px -16px;
+            }
+
+            .rating-34 {
+                background-position: -12px -16px;
+            }
+
+            .rating-44 {
+                background-position: 0 -16px;
+            }
+
+            .rating-5 {
+                background-position: -48px -16px;
+            }
+
+            .rating-15 {
+                background-position: -36px -16px;
+            }
+
+            .rating-25 {
+                background-position: -24px -16px;
+            }
+
+            .rating-35 {
+                background-position: -12px -16px;
+            }
+
+            .rating-45 {
+                background-position: 0 -16px;
+            }
+
+            .rating-6 {
+                background-position: -48px -16px;
+            }
+
+            .rating-16 {
+                background-position: -36px -16px;
+            }
+
+            .rating-26 {
+                background-position: -24px -16px;
+            }
+
+            .rating-36 {
+                background-position: -12px -16px;
+            }
+
+            .rating-46 {
+                background-position: 0 -16px;
+            }
+
+            .rating-7 {
+                background-position: -48px -16px;
+            }
+
+            .rating-17 {
+                background-position: -36px -16px;
+            }
+
+            .rating-27 {
+                background-position: -24px -16px;
+            }
+
+            .rating-37 {
+                background-position: -12px -16px;
+            }
+
+            .rating-47 {
+                background-position: 0 -16px;
+            }
+
+            .rating-8 {
+                background-position: -48px -16px;
+            }
+
+            .rating-18 {
+                background-position: -36px -16px;
+            }
+
+            .rating-28 {
+                background-position: -24px -16px;
+            }
+
+            .rating-38 {
+                background-position: -12px -16px;
+            }
+
+            .rating-48 {
+                background-position: 0 -16px;
+            }
+
+            .rating-9 {
+                background-position: -48px -16px;
+            }
+
+            .rating-19 {
+                background-position: -36px -16px;
+            }
+
+            .rating-29 {
+                background-position: -24px -16px;
+            }
+
+            .rating-39 {
+                background-position: -12px -16px;
+            }
+
+            .rating-49 {
+                background-position: 0 -16px;
+            }
+        </style>
+    </ons-navigator>
+</body>
+<script>
+    getHomeData();
+    tatol();
+    document.addEventListener('prechange', function (event) {
+        if (event.index == 0) {
+            console.log('Home clicked');
+            getHomeData();
+        } else if (event.index == 1) {
+            console.log('Cart clicked');
+            var name = localStorage.getItem('name');
+            var item = localStorage.getItem('items');
+            if (name == null && item == null) {
+                getProductData()
+            } else if (name != null && item == null) {
+                getProductData(name)
+            }
+            else {
+            }
+            localStorage.clear();
+        } else if (event.index == 2) {
+            console.log('shop clicked');
+            var id = localStorage.getItem('pid');
+            getCartData();
+
+        }
+
+    });
+    function getHomeData() {
+        var docRef = db.collection("UI").doc("home");
+        docRef.get().then(function (doc) {
+            if (doc.exists) {
+                console.log("Document data:", doc.data());
+                var data = doc.data();
+                $('#appname').html(data.appname);
+                var style = "background: url('" + data.slides[0] + "') no-repeat center; background-size: contain;";
+$('#carousel1').attr('style', style);
+                 var style = "background: url('" + data.slides[1] + "') no-repeat center; background-size: contain;";
+$('#carousel2').attr('style', style);
+                 var style = "background: url('" + data.slides[2] + "') no-repeat center; background-size: contain;";
+                $('#carousel3').attr('style', style);
+                var icon_template = $('#icon_template').html();
+                var html = ejs.render(icon_template, { categories: data.categories });
+                $('#icons').html(html);
+            } else {
+                console.log("No such document!");
+            }
+        }).catch(function (error) {
+            console.log("Error getting document:", error);
+        });
+    }
+
+    function getProductData(name, item) {
+        if (name == null) {
+            db.collection("PRODUCTS").get()
+                .then(function (querySnapshot) {
+                    var product_template = $('#product_template').html();
+                    console.log(querySnapshot.docs);
+                    var html = ejs.render(product_template, { product: querySnapshot.docs });
+                    $('#product').html(html);
+                })
+                .catch(function (error) {
+                    console.log("Error getting documents: ", error);
+                });
+
+        } else {
+            db.collection("PRODUCTS").where("catagory", "==", name).get().then(function (querySnapshot) {
+                if (querySnapshot.docs.length == 0) {
+                    db.collection("PRODUCTS").get()
+                        .then(function (querySnapshot) {
+                            var product_template = $('#product_template').html();
+                            console.log("catagory :" + querySnapshot);
+                            var html = ejs.render(product_template, { product: querySnapshot.docs });
+                            $('#product').html(html);
+                        })
+                        .catch(function (error) {
+                            console.log("Error getting documents: ", error);
+                        });
+                } else {
+                    db.collection("PRODUCTS").where("catagory", "==", name).get()
+                        .then(function (querySnapshot) {
+                            console.log(querySnapshot.docs);
+                            var product_template = $('#product_template').html();
+                            var html = ejs.render(product_template, { product: querySnapshot.docs });
+                            $('#product').html(html);
+                        })
+                        .catch(function (error) {
+                            console.log("Error getting documents: ", error);
+                        });
+                }
+            })
+                .catch(function (error) {
+                    console.log("Error getting documents: ", error);
+                });
+        }
+    }
+
+    var prev = function () {
+        var carousel = document.getElementById('carousel');
+        carousel.prev();
+    };
+
+    var next = function () {
+        var carousel = document.getElementById('carousel');
+        carousel.next();
+    };
+
+    ons.ready(function () {
+        var carousel = document.addEventListener('postchange', function (event) {
+            console.log('Changed to ' + event.activeIndex)
+        });
+    });
+
+    function changeTab(name) {
+        console.log(name)
+        document.getElementById('tabbar').setActiveTab(1);
+        localStorage.setItem('name', name);
+    }
+
+    function detailpd() {
+        var detail = localStorage.getItem('detail');
+        console.log(detail);
+        db.collection("PRODUCTS").where("title", "==", detail).get()
+            .then(function (querySnapshot) {
+                console.log(querySnapshot.docs);
+                var detail_template = $('#detail_template').html();
+                var html = ejs.render(detail_template, { detail: querySnapshot.docs });
+                $('#detail').html(html);
+            })
+            .catch(function (error) {
+                console.log("Error getting documents: ", error);
+            });
+    }
+
+    function getDetail(detail) {
+        localStorage.setItem("detail", detail)
+        detailpd();
+        myNavigator.pushPage('tab4.html');
+    }
+
+    var dataCart = [];
+    function addtocart(add2cart) {
+        localStorage.clear('quentinTarantino');
+        localStorage.setItem('quentinTarantino', add2cart);
+        var retrievedData = localStorage.getItem("quentinTarantino");
+        console.log(retrievedData);
+        dataCart.push(retrievedData);
+        ons.notification.toast(retrievedData + ' Add to Cart', { timeout: 2000 });
+        $("#addcart").attr('badge', dataCart.length);
+    }
+
+    function search(search) {
+        const filterItems = (needle, heystack) => {
+            let query = needle.toLowerCase();
+            return heystack.filter(item => item.data().title.toLowerCase().indexOf(needle) >= 0);
+        }
+        var item = filterItems(search, data);
+        localStorage.setItem('items', item);
+        getpdcart(item);
+
+        document.getElementById('tabbar').setActiveTab(1);
+    }
+    const data = []
+
+    function tatol() {
+        db.collection("PRODUCTS").get()
+            .then(function (querySnapshot) {
+                querySnapshot.docs.forEach(function (item) {
+                    data.push(item)
+                    console.log(data)
+                });
+
+            })
+    }
+
+
+    function getpdcart(title) {
+        console.log('getpdcart', title);
+        var product_template = $('#product_template').html();
+        var html = ejs.render(product_template, { product: title });
+        $('#product').html(html);
+
+    }
+
+    function getCartData() {
+        console.log('functioncart');
+        console.log(dataCart);
+        document.getElementById('cart_show').innerHTML = '';
+
+        var countCart = 0;
+        dataCart.forEach(function (dataCart) {
+            var apr = db.collection("PRODUCTS").where("title", "==", dataCart);
+            apr.get().then(function (querySnapshot) {
+                console.log(querySnapshot.docs)
+                var cart_template = $('#cart_template').html();
+                var html = ejs.render(cart_template, { product: querySnapshot.docs, countCart: countCart });
+                $('#cart_show').append(html);
+
+            })
+
+        })
+    }
+    function deleted(Cartitem) {
+        var deleted = dataCart.splice(Cartitem, 1);
+        ons.notification.alert('Remove the ' + deleted + ' from the basket!');
+        if (dataCart.length == 0) {
+            $("#addcart").attr('badge', '');
+        } else {
+            $("#addcart").attr('badge', dataCart.length);
+        }
+        getCartData();
+    }
+
+</script>
+
+
+
+//
+<!-- 
+        //     function addNewData() {
+        //         var data = {
+        //             pid: '5',
+        //             title: 'Iphone 8 Plus',
+        //             price: 27800,
+        //             catagory: 'smartphone'
+        //         } -->
+
+</html>

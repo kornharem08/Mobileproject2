@@ -8,8 +8,7 @@
     <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css">
     <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
     <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
-        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
     <script src="ejs.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Fira+Sans+Extra+Condensed" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/5.5.0/firebase.js"></script>
@@ -132,7 +131,7 @@
                 </div>
                 
                 <div class="right">
-                    <ons-toolbar-button icon="fa-trash" onclick="deleted(<%countCart%>)"></ons-toolbar-button>
+                    <ons-toolbar-button icon="fa-trash" onclick="deleted(<%=countCart%>)"></ons-toolbar-button>
                 </div>
             </ons-list-item>
             <%});%>
@@ -529,27 +528,56 @@
 
     });
     function getHomeData() {
-        var docRef = db.collection("UI").doc("home");
-        docRef.get().then(function (doc) {
-            if (doc.exists) {
-                console.log("Document data:", doc.data());
-                var data = doc.data();
-                $('#appname').html(data.appname);
-                var style = "background: url('" + data.slides[0] + "') no-repeat center; background-size: contain;";
-$('#carousel1').attr('style', style);
-                 var style = "background: url('" + data.slides[1] + "') no-repeat center; background-size: contain;";
-$('#carousel2').attr('style', style);
-                 var style = "background: url('" + data.slides[2] + "') no-repeat center; background-size: contain;";
-                $('#carousel3').attr('style', style);
-                var icon_template = $('#icon_template').html();
-                var html = ejs.render(icon_template, { categories: data.categories });
-                $('#icons').html(html);
-            } else {
-                console.log("No such document!");
-            }
-        }).catch(function (error) {
-            console.log("Error getting document:", error);
-        });
+        var code = localStorage.getItem("code")
+        if (code == null) {
+            var docRef = db.collection("UI").doc("home");
+            docRef.get().then(function (doc) {
+                if (doc.exists) {
+                    console.log("Document data:", doc.data());
+                    var data = doc.data();
+                    $('#appname').html(data.appname);
+                    var style = "background: url('" + data.slides[0] + "') no-repeat center; background-size: contain;";
+                    $('#carousel1').attr('style', style);
+                    var style = "background: url('" + data.slides[1] + "') no-repeat center; background-size: contain;";
+                    $('#carousel2').attr('style', style);
+                    var style = "background: url('" + data.slides[2] + "') no-repeat center; background-size: contain;";
+                    $('#carousel3').attr('style', style);
+                    var icon_template = $('#icon_template').html();
+                    var html = ejs.render(icon_template, { categories: data.categories });
+                    $('#icons').html(html);
+                } else {
+                    console.log("No such document!");
+                }
+            }).catch(function (error) {
+                console.log("Error getting document:", error);
+            });
+        } else if (code != null) {
+            getDetail(code);
+
+            var docRef = db.collection("UI").doc("home");
+            docRef.get().then(function (doc) {
+                if (doc.exists) {
+                    console.log("Document data:", doc.data());
+                    var data = doc.data();
+                    $('#appname').html(data.appname);
+                    var style = "background: url('" + data.slides[0] + "') no-repeat center; background-size: contain;";
+                    $('#carousel1').attr('style', style);
+                    var style = "background: url('" + data.slides[1] + "') no-repeat center; background-size: contain;";
+                    $('#carousel2').attr('style', style);
+                    var style = "background: url('" + data.slides[2] + "') no-repeat center; background-size: contain;";
+                    $('#carousel3').attr('style', style);
+                    var icon_template = $('#icon_template').html();
+                    var html = ejs.render(icon_template, { categories: data.categories });
+                    $('#icons').html(html);
+                } else {
+                    console.log("No such document!");
+                }
+            }).catch(function (error) {
+                console.log("Error getting document:", error);
+            });
+        }
+
+
     }
 
     function getProductData(name, item) {
@@ -632,6 +660,7 @@ $('#carousel2').attr('style', style);
             .catch(function (error) {
                 console.log("Error getting documents: ", error);
             });
+        localStorage.clear();
     }
 
     function getDetail(detail) {
@@ -656,7 +685,7 @@ $('#carousel2').attr('style', style);
             let query = needle.toLowerCase();
             return heystack.filter(item => item.data().title.toLowerCase().indexOf(needle) >= 0);
         }
-        var item = filterItems(search, data);
+        var item = filterItems(search.toLowerCase(), data);
         localStorage.setItem('items', item);
         getpdcart(item);
 
@@ -688,19 +717,23 @@ $('#carousel2').attr('style', style);
         console.log('functioncart');
         console.log(dataCart);
         document.getElementById('cart_show').innerHTML = '';
-
         var countCart = 0;
+
         dataCart.forEach(function (dataCart) {
+
             var apr = db.collection("PRODUCTS").where("title", "==", dataCart);
             apr.get().then(function (querySnapshot) {
                 console.log(querySnapshot.docs)
                 var cart_template = $('#cart_template').html();
                 var html = ejs.render(cart_template, { product: querySnapshot.docs, countCart: countCart });
+                console.log(html);
                 $('#cart_show').append(html);
+                countCart = countCart + 1;
+
 
             })
-
         })
+
     }
     function deleted(Cartitem) {
         var deleted = dataCart.splice(Cartitem, 1);
@@ -713,11 +746,7 @@ $('#carousel2').attr('style', style);
         getCartData();
     }
 
-</script>
-
-
-
-//
+</script> //
 <!-- 
         //     function addNewData() {
         //         var data = {

@@ -8,19 +8,58 @@
     <script src="cordova.js"></script>
 </head>
 <body>
+    <div class="cut-border"></div>
+     <style>
+     .cut-border {
+  position: relative;
+  display: inline-block;
+  border: 5px solid black;
+  width: 150px;
+  height: 150px;
+  left: -5px;
+  margin-top: 200px;
+  top: -5px;
+  margin-left: 95px;
+}
+.cut-border::before {
+  content: "";
+  position: absolute;
+  height: calc(100% + 10px);
+  width: 50%;
+  top: -5px;
+  left: 25%;
+}
+.cut-border::after {
+  content: "";
+  position: absolute;
+  height: 50%;
+  width: calc(100% + 10px);
+  top: 25%;
+  left: -5px;
+}
+    
+     </style>
     <script>
         document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
     
 QRScanner.scan(displayContents);
+// QRScanner.enableLight(function(err, status){
+//   err && console.error(err);
+//   console.log(status);
+// });
 
 function displayContents(err, text){
   if(err){
     // an error occurred, or the scan was canceled (error code 6)
   } else {
     // The scan completed, display the contents of the QR code:
-    localStorage.setItem("code", "text");
+    localStorage.setItem("code",text);
+    QRScanner.disableLight(function(err, status){
+  err && console.error(err);
+  console.log(status);
+});
     QRScanner.hide();
     window.location.href='index.html';
   }

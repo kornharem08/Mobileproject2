@@ -12,6 +12,18 @@
     },
     "cordova-plugin-qrscanner": {
       "PACKAGE_NAME": "com.example.hello"
+    },
+    "cordova-plugin-buildinfo": {
+      "PACKAGE_NAME": "com.example.hello"
+    },
+    "cordova-universal-links-plugin": {
+      "PACKAGE_NAME": "com.example.hello"
+    },
+    "cordova-plugin-browsertab": {
+      "PACKAGE_NAME": "com.example.hello"
+    },
+    "cordova-plugin-inappbrowser": {
+      "PACKAGE_NAME": "com.example.hello"
     }
   },
   "dependent_plugins": {}

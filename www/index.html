@@ -12,13 +12,9 @@
         crossorigin="anonymous"></script>
     <script src="ejs.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Fira+Sans+Extra+Condensed" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/5.5.0/firebase.js"></script>
-    <script src="/__/firebase/5.4.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-firestore.js"></script>
+    <script src="cordova.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.7/firebase.js"></script>
     <script>
-        // Initialize Firebase
-
         var config = {
             apiKey: "AIzaSyC-41vL_B8oS2JaG3il9Gsgl0vVJN9qIDk",
             authDomain: "showpee-22442.firebaseapp.com",
@@ -36,28 +32,6 @@
             timestampsInSnapshots: true
         });
     </script>
-    <title></title>
-</head>
-<body>
-    <script>
-        // Initialize Firebase
-        var config = {
-            apiKey: "AIzaSyC-41vL_B8oS2JaG3il9Gsgl0vVJN9qIDk",
-            authDomain: "showpee-22442.firebaseapp.com",
-            databaseURL: "https://showpee-22442.firebaseio.com",
-            projectId: "showpee-22442",
-            storageBucket: "showpee-22442.appspot.com",
-            messagingSenderId: "325935737512"
-        };
-        firebase.initializeApp(config);
-        // Initialize Cloud Firestore through Firebase
-        var db = firebase.firestore();
-        // Disable deprecated features
-        db.settings({
-            timestampsInSnapshots: true
-        });
-    </script>
-    <title></title>
 </head>
 <body>
     <script>

@@ -1,4 +1,4 @@
-#Sat Nov 10 21:22:48 ICT 2018
+#Sun Nov 11 18:07:04 ICT 2018
 base.0=D\:\\977-341\\Mobiles\\Mobileproject2\\Mobileproject2\\platforms\\android\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\0
 path.0=classes.dex
 renamed.0=classes.dex

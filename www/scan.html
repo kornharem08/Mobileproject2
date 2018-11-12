@@ -1,77 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Scanner</title>
-    <script src="cordova.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Scanner</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/core.js"></script>
+  <script src="cordova.js"></script>
 </head>
+
 <body>
-    <div class="cut-border"></div>
-     <style>
-     .cut-border {
-  position: relative;
-  display: inline-block;
-  border: 5px solid black;
-  width: 150px;
-  height: 150px;
-  left: -5px;
-  margin-top: 200px;
-  top: -5px;
-  margin-left: 95px;
+  <div class="cut-border"></div>
+  <div class="fhashlight">
+    <center>
+      <img onclick="clickbutton()" src="fhashlight.png" alt="Smiley face" width="50" height="50">
+    </center>
+  </div>
+  <style>
+    .cut-border {
+      position: relative;
+      display: inline-block;
+      border: 5px solid black;
+      width: 150px;
+      height: 150px;
+      left: -5px;
+      margin-top: 200px;
+      top: -5px;
+      margin-left: 95px;
+    }
+
+    .cut-border::before {
+      content: "";
+      position: absolute;
+      height: calc(100% + 10px);
+      width: 50%;
+      top: -5px;
+      left: 25%;
+    }
+
+    .cut-border::after {
+      content: "";
+      position: absolute;
+      height: 50%;
+      width: calc(100% + 10px);
+      top: 25%;
+      left: -5px;
+    }
+
+    .fhashlight {
+      margin-top: 130px;
+    }
+  </style>
+  <script>
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    function onDeviceReady() {
+
+      QRScanner.scan(displayContents);
+      // QRScanner.enableLight(function(err, status){
+      //   err && console.error(err);
+      //   console.log(status);
+      // });
+
+      function displayContents(err, text) {
+        if (err) {
+          // an error occurred, or the scan was canceled (error code 6)
+        } else {
+          // The scan completed, display the contents of the QR code:
+          localStorage.setItem("code", text);
+          QRScanner.disableLight(function (err, status) {
+            err && console.error(err);
+            console.log(status);
+          });
+          QRScanner.hide();
+          window.location.href = 'index.html';
+        }
+      }
+
+      // Make the webview transparent so the video preview is visible behind it.
+      QRScanner.show();
+      // Be sure to make any opaque HTML elements transparent here to avoid
+      // covering the video.
+    }
+
+var flag = 1;
+function clickbutton(){
+        if(flag == 1){
+          doOdd(); flag = 2;
+        }else{
+          doEven(); flag = 1;
+        }
 }
-.cut-border::before {
-  content: "";
-  position: absolute;
-  height: calc(100% + 10px);
-  width: 50%;
-  top: -5px;
-  left: 25%;
-}
-.cut-border::after {
-  content: "";
-  position: absolute;
-  height: 50%;
-  width: calc(100% + 10px);
-  top: 25%;
-  left: -5px;
-}
+          
+function doOdd() {
+      QRScanner.enableLight(function (err, status) {
+        err && console.error(err);
+        console.log("เปิด");
+      });
+    }
+
+    function doEven() {
+      QRScanner.disableLight(function (err, status) {
+        err && console.error(err);
+        console.log("ปิด");
+      });
+    }
     
-     </style>
-    <script>
-        document.addEventListener("deviceready", onDeviceReady, false);
 
-function onDeviceReady() {
     
-QRScanner.scan(displayContents);
-// QRScanner.enableLight(function(err, status){
-//   err && console.error(err);
-//   console.log(status);
-// });
-
-function displayContents(err, text){
-  if(err){
-    // an error occurred, or the scan was canceled (error code 6)
-  } else {
-    // The scan completed, display the contents of the QR code:
-    localStorage.setItem("code",text);
-    QRScanner.disableLight(function(err, status){
-  err && console.error(err);
-  console.log(status);
-});
-    QRScanner.hide();
-    window.location.href='index.html';
-  }
-}
-
-// Make the webview transparent so the video preview is visible behind it.
-QRScanner.show();
-// Be sure to make any opaque HTML elements transparent here to avoid
-// covering the video.
-}
-
-
-        </script>
+  </script>
 </body>
+
 </html>

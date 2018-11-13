@@ -7,7 +7,7 @@
             <path url="/__/auth/callback" />
         </host>
     </universal-links>
-    <name>HelloWorld</name>
+    <name>Shopee034</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
     </description>
@@ -25,6 +25,12 @@
     <allow-intent href="geo:*" />
     <platform name="android">
         <allow-intent href="market:*" />
+    </platform>
+    <platform name="android">
+        <icon density="ldpi" src="res/icon/android/icons8-scarlet-shopping-basket-36.png" />
+        <icon density="mdpi" src="res/icon/android/icons8-scarlet-shopping-basket-48.png" />
+        <icon density="hdpi" src="res/icon/android/icons8-scarlet-shopping-basket-72.png" />
+        <icon density="xhdpi" src="res/icon/android/icons8-scarlet-shopping-basket-96.png" />
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />
